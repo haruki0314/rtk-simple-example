@@ -1,4 +1,6 @@
 import { configureStore, createSlice } from '@reduxjs/toolkit';
+import createSagaMiddleware from 'redux-saga';
+import rootSaga from './sagas';
 
 // Counter slice
 const counterSlice = createSlice({
@@ -30,12 +32,20 @@ const modalSlice = createSlice({
 export const { increment, decrement, incrementByAmount } = counterSlice.actions;
 export const { openModal1, closeModal1, openModal2, closeModal2 } = modalSlice.actions;
 
+// Create saga middleware
+const sagaMiddleware = createSagaMiddleware();
+
 // Create store
 const store = configureStore({
   reducer: {
     counter: counterSlice.reducer,
     modals: modalSlice.reducer,
   },
+  middleware: (getDefaultMiddleware) =>
+    getDefaultMiddleware({ thunk: false }).concat(sagaMiddleware),
 });
+
+// Run saga
+sagaMiddleware.run(rootSaga);
 
 export default store;
